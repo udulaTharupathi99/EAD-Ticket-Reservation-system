@@ -13,7 +13,7 @@ namespace EAD_APP.BusinessLogic.Services
 
         public UserService(IMongoDatabase mongoDatabase)
         {
-            _userCollection = mongoDatabase.GetCollection<User>("user"); ;
+            _userCollection = mongoDatabase.GetCollection<User>("user"); 
         }
 
         public async Task<bool> CreateUser(User user)

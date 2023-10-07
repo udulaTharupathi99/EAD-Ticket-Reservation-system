@@ -10,6 +10,9 @@ namespace EAD_APP.Core.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
+        
+        [BsonElement("trainName")]
+        public string TrainName { get; set; }
 
         [BsonElement("status")]
         public ActiveStatus Status { get; set; }
