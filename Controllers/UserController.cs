@@ -1,5 +1,6 @@
 ﻿using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Models;
+using EAD_APP.Core.Requests;
 //using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -68,6 +69,17 @@ namespace EAD_APP.Controllers
 
             await _userService.DeleteUser(id);
             return NoContent();
+        }
+        
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest model)
+        {
+            var res = await _userService.LoginUser(model);
+            if (!res)
+            {
+                return Unauthorized();
+            }
+            return Ok(res);
         }
     }
 }

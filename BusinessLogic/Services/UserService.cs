@@ -1,6 +1,9 @@
 ﻿using EAD_APP.BusinessLogic.Interfaces;
+using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
+using EAD_APP.Core.Requests;
 using MongoDB.Driver;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace EAD_APP.BusinessLogic.Services
 {
@@ -15,7 +18,29 @@ namespace EAD_APP.BusinessLogic.Services
 
         public async Task<bool> CreateUser(User user)
         {
+            //check NIC
+            
+            user.Password = BCryptNet.HashPassword(user.Password);
             await _userCollection.InsertOneAsync(user);
+            return true;
+        }
+        
+        public async Task<bool> LoginUser(LoginRequest request)
+        {
+            var user =  await _userCollection.Find(u => u.Email == request.Email).FirstOrDefaultAsync();
+
+            if (user == null || user.Status == ActiveStatus.Delete)
+            {
+                return false;
+            }
+
+            var res = BCryptNet.Verify(request.Password, user.Password);
+
+            if (!res)
+            {
+                return false;
+            }
+
             return true;
         }
 
