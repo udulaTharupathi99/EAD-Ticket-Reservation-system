@@ -9,6 +9,9 @@ public class Reservation
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
+    
+    [BsonElement("trainId")]
+    public string TrainId { get; set; }
 
     [BsonElement("scheduleId")]
     public string ScheduleId { get; set; }

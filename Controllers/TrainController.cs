@@ -1,4 +1,5 @@
 using EAD_APP.BusinessLogic.Interfaces;
+using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -66,5 +67,28 @@ public class TrainController : Controller
     
         await _trainService.DeleteTrain(id);
         return NoContent();
+    }
+    
+    [HttpPut]
+    [Route("{trainId}/{status}")]
+    public async Task<IActionResult> UpdateStatus(string trainId, ActiveStatus status)
+    {
+        try
+        {
+            var train = await _trainService.GetTrainById(trainId);
+            if (train == null)
+            {
+                return NotFound();
+            }
+
+            await _trainService.UpdateStatus(train, status);
+            return Ok();
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+       
     }
 }

@@ -23,6 +23,7 @@ builder.Services.AddSingleton<IMongoDatabase>(options => {
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<ITrainService, TrainService>();
 builder.Services.AddSingleton<IScheduleService, ScheduleService>();
+builder.Services.AddSingleton<IReservationService, ReservationService>();
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
 ﻿using EAD_APP.BusinessLogic.Interfaces;
+using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
 using EAD_APP.Core.Requests;
 //using Microsoft.AspNetCore.Http;
@@ -41,8 +42,16 @@ namespace EAD_APP.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUser(User request)
         {
-            await _userService.CreateUser(request);
-            return CreatedAtAction(nameof(GetUserById), new { id = request.Id }, request);
+            try
+            {
+                await _userService.CreateUser(request);
+                return CreatedAtAction(nameof(GetUserById), new { id = request.Id }, request);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            
         }
 
         [HttpPut]
@@ -74,12 +83,27 @@ namespace EAD_APP.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest model)
         {
-            var res = await _userService.LoginUser(model);
-            if (!res)
+            var user = await _userService.LoginUser(model);
+            if (user == null)
             {
                 return Unauthorized();
             }
-            return Ok(res);
+            return Ok(user);
+        }
+        
+        
+        [HttpPut]
+        [Route("{userId}/{status}")]
+        public async Task<IActionResult> UpdateStatus(string userId, ActiveStatus status)
+        {
+            var user = await _userService.GetUserById(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            await _userService.UpdateStatus(user, status);
+            return Ok();
         }
     }
 }

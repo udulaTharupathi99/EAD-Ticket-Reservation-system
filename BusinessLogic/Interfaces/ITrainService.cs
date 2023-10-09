@@ -1,4 +1,5 @@
-﻿using EAD_APP.Core.Models;
+﻿using EAD_APP.Core.Enums;
+using EAD_APP.Core.Models;
 
 namespace EAD_APP.BusinessLogic.Interfaces;
 
@@ -9,4 +10,5 @@ public interface ITrainService
     Task<bool> CreateTrain(Train user);
     Task<bool> UpdateTrain(Train user);
     Task<bool> DeleteTrain(string id);
+    Task<bool> UpdateStatus(Train train, ActiveStatus status);
 }

@@ -16,30 +16,44 @@ namespace EAD_APP.BusinessLogic.Services
             _userCollection = mongoDatabase.GetCollection<User>("user"); 
         }
 
-        public async Task<bool> CreateUser(User user)
+        public async Task<bool> CreateUser(User request)
         {
             //check NIC
+            var userModel =  await _userCollection.Find(u => u.Email == request.Email || u.NIC == request.NIC).FirstOrDefaultAsync();
+
+            if (userModel != null)
+            {
+                throw new Exception("A user with the same email or NIC already exists.");
+            }
             
-            user.Password = BCryptNet.HashPassword(user.Password);
-            await _userCollection.InsertOneAsync(user);
+            request.Password = BCryptNet.HashPassword(request.Password);
+            await _userCollection.InsertOneAsync(request);
             return true;
         }
         
-        public async Task<bool> LoginUser(LoginRequest request)
+        public async Task<User> LoginUser(LoginRequest request)
         {
             var user =  await _userCollection.Find(u => u.Email == request.Email).FirstOrDefaultAsync();
 
             if (user == null || user.Status == ActiveStatus.Delete)
             {
-                return false;
+                return null;
             }
 
             var res = BCryptNet.Verify(request.Password, user.Password);
 
             if (!res)
             {
-                return false;
+                return null;
             }
+
+            return user;
+        }
+
+        public async Task<bool> UpdateStatus(User user, ActiveStatus status)
+        {
+            user.Status = status;
+            var res = await _userCollection.ReplaceOneAsync(x => x.Id == user.Id, user);
 
             return true;
         }
@@ -58,7 +72,7 @@ namespace EAD_APP.BusinessLogic.Services
 
         public async Task<User> GetUserById(string id)
         {
-            var user =  await _userCollection.Find(_ => _.Id == id).FirstOrDefaultAsync();
+            var user =  await _userCollection.Find(u => u.Id == id).FirstOrDefaultAsync();
             return user;
         }
 
