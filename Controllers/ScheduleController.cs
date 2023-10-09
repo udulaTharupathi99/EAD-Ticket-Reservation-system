@@ -1,5 +1,6 @@
 using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Models;
+using EAD_APP.Core.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EAD_APP.Controllers;
@@ -52,7 +53,8 @@ public class ScheduleController : Controller
         }
     
         await _scheduleService.UpdateSchedule(request);
-        return NoContent();
+        var newSchedule = await _scheduleService.GetScheduleById(request.Id);
+        return Ok(newSchedule);
     }
     
     [HttpDelete]
@@ -65,7 +67,8 @@ public class ScheduleController : Controller
         }
     
         await _scheduleService.DeleteSchedule(id);
-        return NoContent();
+        var res = new ApiResponse() { IsSuccess = "true", Msg = "Success" };
+        return Ok(res);
     }
     
     [HttpGet]

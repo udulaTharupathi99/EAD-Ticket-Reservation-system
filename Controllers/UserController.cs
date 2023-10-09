@@ -2,6 +2,7 @@
 using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
 using EAD_APP.Core.Requests;
+using EAD_APP.Core.Response;
 //using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -64,7 +65,8 @@ namespace EAD_APP.Controllers
             }
 
             await _userService.UpdateUser(request);
-            return NoContent();
+            var newUser = await _userService.GetUserById(user.Id);
+            return Ok(newUser);
         }
 
         [HttpDelete]
@@ -77,7 +79,8 @@ namespace EAD_APP.Controllers
             }
 
             await _userService.DeleteUser(id);
-            return NoContent();
+            var res = new ApiResponse() { IsSuccess = "true", Msg = "Success" };
+            return Ok(res);
         }
         
         [HttpPost("login")]
@@ -103,7 +106,8 @@ namespace EAD_APP.Controllers
             }
 
             await _userService.UpdateStatus(user, status);
-            return Ok();
+            var res = new ApiResponse() { IsSuccess = "true", Msg = "Success"};
+            return Ok(res);
         }
     }
 }

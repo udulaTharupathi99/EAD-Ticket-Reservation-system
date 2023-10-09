@@ -1,6 +1,7 @@
 using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
+using EAD_APP.Core.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EAD_APP.Controllers;
@@ -53,7 +54,8 @@ public class TrainController : Controller
         }
     
         await _trainService.UpdateTrain(request);
-        return NoContent();
+        var newTrain = await _trainService.GetTrainById(train.Id);
+        return Ok(newTrain);
     }
     
     [HttpDelete]
@@ -66,7 +68,8 @@ public class TrainController : Controller
         }
     
         await _trainService.DeleteTrain(id);
-        return NoContent();
+        var res = new ApiResponse() { IsSuccess = "true", Msg = "Success" };
+        return Ok(res);
     }
     
     [HttpPut]
@@ -82,7 +85,8 @@ public class TrainController : Controller
             }
 
             await _trainService.UpdateStatus(train, status);
-            return Ok();
+            var res = new ApiResponse() { IsSuccess = "true", Msg = "Success"};
+            return Ok(res);
 
         }
         catch (Exception e)
