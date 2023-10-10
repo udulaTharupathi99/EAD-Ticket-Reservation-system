@@ -59,6 +59,7 @@ public class TrainController : Controller
     }
     
     [HttpDelete]
+    [Route("{id}")]
     public async Task<IActionResult> DeleteTrain(string id)
     {
         var train = await _trainService.GetTrainById(id);

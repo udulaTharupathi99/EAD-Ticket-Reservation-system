@@ -7,6 +7,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOriginPolicy", builder =>
+    {
+        builder
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -25,6 +36,10 @@ builder.Services.AddSingleton<ITrainService, TrainService>();
 builder.Services.AddSingleton<IScheduleService, ScheduleService>();
 builder.Services.AddSingleton<IReservationService, ReservationService>();
 
+
+
+//builder.Services.AddCORSConfig();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -33,6 +48,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowAnyOriginPolicy");
 
 app.UseHttpsRedirection();
 

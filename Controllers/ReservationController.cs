@@ -39,36 +39,64 @@ public class ReservationController : Controller
     [HttpPost]
     public async Task<IActionResult> AddReservation(Reservation request)
     {
-        await _ReservationService.CreateReservation(request);
-        return CreatedAtAction(nameof(GetReservationById), new { id = request.Id }, request);
+        try
+        {
+            await _ReservationService.CreateReservation(request);
+            return CreatedAtAction(nameof(GetReservationById), new { id = request.Id }, request);
+        }
+        catch (Exception e)
+        {
+            var res = new ApiResponse() { IsSuccess = "false", Msg = e.Message };
+            return BadRequest(res);
+        }
+        
     }
     
     [HttpPut]
     public async Task<IActionResult> UpdateReservation(Reservation request)
     {
-        var schedule = await _ReservationService.GetReservationById(request.Id);
-        if (schedule == null)
+        try
         {
-            return NotFound();
-        }
+            var schedule = await _ReservationService.GetReservationById(request.Id);
+            if (schedule == null)
+            {
+                return NotFound();
+            }
     
-        await _ReservationService.UpdateReservation(request);
-        var newSchedule = await _ReservationService.GetReservationById(request.Id);
-        return Ok(newSchedule);
+            await _ReservationService.UpdateReservation(request);
+            var newSchedule = await _ReservationService.GetReservationById(request.Id);
+            return Ok(newSchedule);
+
+        }
+        catch (Exception e)
+        {
+            var res = new ApiResponse() { IsSuccess = "false", Msg = e.Message };
+            return BadRequest(res);
+        }
     }
     
     [HttpDelete]
     public async Task<IActionResult> DeleteReservation(string id)
     {
-        var schedule = await _ReservationService.GetReservationById(id);
-        if (schedule == null)
+        try
         {
-            return NotFound();
-        }
+            var schedule = await _ReservationService.GetReservationById(id);
+            if (schedule == null)
+            {
+                return NotFound();
+            }
     
-        await _ReservationService.DeleteReservation(id);
-        var res = new ApiResponse() { IsSuccess = "true", Msg = "Success" };
-        return Ok(res);
+            await _ReservationService.DeleteReservation(id);
+            var res = new ApiResponse() { IsSuccess = "true", Msg = "Success" };
+            return Ok(res);
+
+        }
+        catch (Exception e)
+        {
+            var res = new ApiResponse() { IsSuccess = "false", Msg = e.Message };
+            return BadRequest(res);
+        }
+        
     }
     
     [HttpGet]
