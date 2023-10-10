@@ -13,6 +13,9 @@ namespace EAD_APP.Core.Models
         
         [BsonElement("trainName")]
         public string TrainName { get; set; }
+        
+        [BsonElement("note")]
+        public string Note { get; set; }
 
         [BsonElement("status")]
         public ActiveStatus Status { get; set; }
