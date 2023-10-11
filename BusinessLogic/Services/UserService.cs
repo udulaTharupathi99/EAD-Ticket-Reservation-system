@@ -34,21 +34,26 @@ namespace EAD_APP.BusinessLogic.Services
         public async Task<User> LoginUser(LoginRequest request)
         {
             var user =  await _userCollection.Find(u => u.Email == request.Email).FirstOrDefaultAsync();
-
-            if (user == null || user.Status == ActiveStatus.Delete)
+            
+            if (user != null)
             {
-                throw new Exception("User deactivated.");
-                return null;
+                var res = BCryptNet.Verify(request.Password, user.Password);
+
+                if (!res)
+                {
+                    throw new Exception("Incorrect credentials.");
+                }
+                
+                if (user.Status == ActiveStatus.Delete)
+                {
+                    throw new Exception("User deactivated.");
+                }
             }
-
-            var res = BCryptNet.Verify(request.Password, user.Password);
-
-            if (!res)
+            else
             {
-                throw new Exception("Incorrect credentials.");
-                return null;
+                throw new Exception("User deleted.");
             }
-
+            
             return user;
         }
 
@@ -80,6 +85,7 @@ namespace EAD_APP.BusinessLogic.Services
 
         public async Task<bool> UpdateUser(User user)
         {
+            user.Password =  BCryptNet.HashPassword(user.Password);
             var res = await _userCollection.ReplaceOneAsync(x => x.Id == user.Id, user);
 
             return true;
