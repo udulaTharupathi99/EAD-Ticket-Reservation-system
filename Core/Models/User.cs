@@ -20,7 +20,7 @@ namespace EAD_APP.Core.Models
         public string Password { get; set; }
 
         [BsonElement("nic")]
-        public int NIC { get; set; }
+        public string NIC { get; set; }
 
         [BsonElement("role")]
         public RoleType Role { get; set; }
