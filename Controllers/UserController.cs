@@ -86,12 +86,22 @@ namespace EAD_APP.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest model)
         {
-            var user = await _userService.LoginUser(model);
-            if (user == null)
+            try
             {
-                return Unauthorized();
+                var user = await _userService.LoginUser(model);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
+                return Ok(user);
+                
             }
-            return Ok(user);
+            catch (Exception e)
+            {
+                var res = new ApiResponse() { IsSuccess = "false", Msg = e.Message };
+                return Unauthorized(res);
+            }
+            
         }
         
         

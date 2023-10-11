@@ -37,6 +37,7 @@ namespace EAD_APP.BusinessLogic.Services
 
             if (user == null || user.Status == ActiveStatus.Delete)
             {
+                throw new Exception("User deactivated.");
                 return null;
             }
 
@@ -44,6 +45,7 @@ namespace EAD_APP.BusinessLogic.Services
 
             if (!res)
             {
+                throw new Exception("Incorrect credentials.");
                 return null;
             }
 
