@@ -99,7 +99,7 @@ namespace EAD_APP.Controllers
             catch (Exception e)
             {
                 var res = new ApiResponse() { IsSuccess = "false", Msg = e.Message };
-                return Unauthorized(res);
+                return BadRequest(res);
             }
             
         }

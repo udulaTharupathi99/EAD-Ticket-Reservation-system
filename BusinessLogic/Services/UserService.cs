@@ -41,17 +41,12 @@ namespace EAD_APP.BusinessLogic.Services
 
                 if (!res)
                 {
-                    throw new Exception("Incorrect credentials.");
-                }
-                
-                if (user.Status == ActiveStatus.Delete)
-                {
-                    throw new Exception("User deactivated.");
+                    return null;
                 }
             }
             else
             {
-                throw new Exception("User deleted.");
+                throw new Exception("User not found.");
             }
             
             return user;
