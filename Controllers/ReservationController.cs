@@ -1,5 +1,6 @@
 using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Models;
+using EAD_APP.Core.Requests;
 using EAD_APP.Core.Response;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,17 +10,18 @@ namespace EAD_APP.Controllers;
 [Route("api/[controller]")]
 public class ReservationController : Controller
 {
-    public readonly IReservationService _ReservationService;
+    private readonly IReservationService _reservationService;
+    
 
     public ReservationController(IReservationService reservationService)
     {
-        _ReservationService = reservationService;
+        _reservationService = reservationService;
     }
     
     [HttpGet]
     public async Task<IActionResult> GetAllReservation()
     {
-        var schedule = await _ReservationService.GetAllReservation();
+        var schedule = await _reservationService.GetAllReservation();
         return Ok(schedule);
     }
     
@@ -27,7 +29,7 @@ public class ReservationController : Controller
     [Route("{id}")]
     public async Task<IActionResult> GetReservationById(string id)
     {
-        var schedule = await _ReservationService.GetReservationById(id);
+        var schedule = await _reservationService.GetReservationById(id);
         if (schedule == null)
         {
             return NotFound();
@@ -37,12 +39,18 @@ public class ReservationController : Controller
     }
     
     [HttpPost]
-    public async Task<IActionResult> AddReservation(Reservation request)
+    public async Task<IActionResult> AddReservation(ReservationRequest request)
     {
         try
         {
-            await _ReservationService.CreateReservation(request);
-            return CreatedAtAction(nameof(GetReservationById), new { id = request.Id }, request);
+            await _reservationService.CreateReservation(request);
+            
+            // var ob = new Reservation();
+            // return CreatedAtAction(nameof(GetReservationById), new { id = request.Id }, ob);
+            // var schedule = await _reservationService.GetReservationById(request.Id);
+            
+            var res = new ApiResponse() { IsSuccess = "true", Msg = "Success"};
+            return Ok(res);
         }
         catch (Exception e)
         {
@@ -53,18 +61,18 @@ public class ReservationController : Controller
     }
     
     [HttpPut]
-    public async Task<IActionResult> UpdateReservation(Reservation request)
+    public async Task<IActionResult> UpdateReservation(ReservationRequest request)
     {
         try
         {
-            var schedule = await _ReservationService.GetReservationById(request.Id);
+            var schedule = await _reservationService.GetReservationById(request.Id);
             if (schedule == null)
             {
                 return NotFound();
             }
     
-            await _ReservationService.UpdateReservation(request);
-            var newSchedule = await _ReservationService.GetReservationById(request.Id);
+            await _reservationService.UpdateReservation(request);
+            var newSchedule = await _reservationService.GetReservationById(request.Id);
             return Ok(newSchedule);
 
         }
@@ -80,13 +88,13 @@ public class ReservationController : Controller
     {
         try
         {
-            var schedule = await _ReservationService.GetReservationById(id);
+            var schedule = await _reservationService.GetReservationById(id);
             if (schedule == null)
             {
                 return NotFound();
             }
     
-            await _ReservationService.DeleteReservation(id);
+            await _reservationService.DeleteReservation(id);
             var res = new ApiResponse() { IsSuccess = "true", Msg = "Success" };
             return Ok(res);
 
@@ -100,10 +108,10 @@ public class ReservationController : Controller
     }
     
     [HttpGet]
-    [Route("reservation/{userId}")]
-    public async Task<IActionResult> GetAllReservationByUserId(string userId)
+    [Route("traverler/{userNIC}")]
+    public async Task<IActionResult> GetAllReservationByUserNIC(string userNIC)
     {
-        var schedule = await _ReservationService.GetAllReservationByTravelerId(userId);
+        var schedule = await _reservationService.GetAllReservationByTravelerId(userNIC);
         return Ok(schedule);
     }
 }

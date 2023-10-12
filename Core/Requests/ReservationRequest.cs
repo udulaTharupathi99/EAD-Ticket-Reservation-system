@@ -1,27 +1,22 @@
-﻿using EAD_APP.Core.Enums;
+using EAD_APP.Core.Enums;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace EAD_APP.Core.Models;
+namespace EAD_APP.Core.Requests;
 
-public class Reservation
+public class ReservationRequest
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
     
-    [BsonElement("trainId")]
-    public string TrainId { get; set; }
-
     [BsonElement("scheduleId")]
     public string ScheduleId { get; set; }
-
-    // [BsonElement("travelerId")]
-    // public string TravelerId { get; set; }
-
+    //public string TrainId { get; set; }
+    
     [BsonElement("travelerNIC")]
     public string TravelerNIC { get; set; }
-
+    
     [BsonElement("bookingDateTime")]
     public DateTime BookingDateTime { get; set; }
     
@@ -31,9 +26,5 @@ public class Reservation
     [BsonElement("seats")]
     public int Seats  { get; set; }
     
-    [BsonElement("schedule")]
-    public Schedule Schedule { get; set; }
-    
-    [BsonElement("isPast")]
-    public bool IsPast { get; set; }
+    //public Schedule Schedule { get; set; }
 }

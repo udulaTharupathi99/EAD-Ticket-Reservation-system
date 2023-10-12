@@ -21,9 +21,17 @@ namespace EAD_APP.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllOfficeUsers()
         {
-            var people = await _userService.GetAllUsers();
+            var people = await _userService.GetAllOfficeUsers();
+            return Ok(people);
+        }
+        
+        [HttpGet]
+        [Route("travelers")]
+        public async Task<IActionResult> GetAllTravelers()
+        {
+            var people = await _userService.GetAllTravelers();
             return Ok(people);
         }
 
@@ -70,6 +78,7 @@ namespace EAD_APP.Controllers
         }
 
         [HttpDelete]
+        [Route("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userService.GetUserById(id);

@@ -12,6 +12,9 @@ public class Schedule
 
     [BsonElement("trainId")]
     public string TrainId { get; set; }
+    
+    [BsonElement("trainName")]
+    public string TrainName { get; set; }
 
     [BsonElement("start")]
     public string Start { get; set; }

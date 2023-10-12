@@ -1,5 +1,7 @@
 using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Models;
+using EAD_APP.Core.Requests;
+using EAD_APP.Core.Response;
 using MongoDB.Driver;
 
 namespace EAD_APP.BusinessLogic.Services;
@@ -9,12 +11,14 @@ public class ReservationService : IReservationService
     private readonly IMongoCollection<Reservation> _reservationCollection;
     private readonly IMongoCollection<User> _userCollection;
     private readonly IMongoCollection<Schedule> _scheduleCollection;
+    private readonly IMongoCollection<Train> _trainCollection;
 
     public ReservationService(IMongoDatabase mongoDatabase)
     {
         _reservationCollection = mongoDatabase.GetCollection<Reservation>("reservation");
         _userCollection = mongoDatabase.GetCollection<User>("user");
         _scheduleCollection = mongoDatabase.GetCollection<Schedule>("schedule");
+        _trainCollection = mongoDatabase.GetCollection<Train>("train");
     }
 
     public async Task<List<Reservation>> GetAllReservation()
@@ -25,37 +29,78 @@ public class ReservationService : IReservationService
 
     public async Task<Reservation> GetReservationById(string id)
     {
+        
         var reservation =  await _reservationCollection.Find(t => t.Id == id).FirstOrDefaultAsync();
-        var user = await _userCollection.Find(t => t.Id == reservation.TravelerId).FirstOrDefaultAsync();
+        //var user = await _userCollection.Find(t => t.Id == reservation.TravelerNIC).FirstOrDefaultAsync();
+        //var schedule =  await _scheduleCollection.Find(t => t.Id == reservation.ScheduleId).FirstOrDefaultAsync();
+        //var train =  await _trainCollection.Find(t => t.Id == reservation.TrainId).FirstOrDefaultAsync();
+
+        var isPastSchedule = await CheckIsPastReservation(reservation.Schedule.StartDateTime);
+
+        reservation.IsPast = isPastSchedule;
+        
+        // var res = new ReservationResponse()
+        // {
+        //     ReservationId = reservation.Id,
+        //     BookingDateTime = reservation.BookingDateTime,
+        //     Status = reservation.Status,
+        //     ScheduleId = reservation.ScheduleId,
+        //     Start = schedule.Start,
+        //     Destination = schedule.Destination,
+        //     StartDateTime = schedule.StartDateTime,
+        //     DestinationDateTime = schedule.DestinationDateTime,
+        //     TrainName = train.TrainName,
+        //     IsPast = isPastSchedule,
+        //     TrainId = reservation.TrainId,
+        //     TravelerNIC = reservation.TravelerNIC,
+        //     Seats = reservation.Seats
+        // };
+        
         return reservation;
     }
 
-    public async Task<bool> CreateReservation(Reservation reservation)
+    public async Task<bool> CreateReservation(ReservationRequest reservation)
     {
-        var allReservationsForUser = await _reservationCollection.Find(s => s.TravelerId == reservation.TravelerId).ToListAsync();
+        var user = await _userCollection.Find(t => t.NIC == reservation.TravelerNIC).FirstOrDefaultAsync();
+        var schedule =  await _scheduleCollection.Find(t => t.Id == reservation.ScheduleId).FirstOrDefaultAsync();
+        
+        var allReservationsForUser = await _reservationCollection.Find(s => s.TravelerNIC == reservation.TravelerNIC).ToListAsync();
 
         var futureReservations = new List<Reservation>();
         if (allReservationsForUser.Count >= 4)
         {
             foreach (var reservationModel in allReservationsForUser)
             {
-                if (reservationModel.BookingDateTime > DateTime.Now)
+                if (reservationModel.Schedule.StartDateTime > DateTime.Now)
                 {
                     futureReservations.Add(reservationModel);
                 }
-
-                if (futureReservations.Count >= 4)
-                {
-                    throw new Exception("Maximum 4 reservations per reference ID.");
-                }
+                
+            }
+            if (futureReservations.Count >= 4)
+            {
+                throw new Exception("Maximum 4 reservations per reference ID.");
             }
         }
+
+        var resModel = new Reservation()
+        {
+            Id = reservation.Id,
+            TrainId = schedule.TrainId,
+            ScheduleId = reservation.ScheduleId,
+            TravelerNIC = reservation.TravelerNIC,
+            BookingDateTime = reservation.BookingDateTime,
+            Seats = reservation.Seats,
+            Status = reservation.Status,
+            Schedule = schedule,
+            IsPast = false
+        };
         
-        await _reservationCollection.InsertOneAsync(reservation);
+        await _reservationCollection.InsertOneAsync(resModel);
         return true;
     }
 
-    public async Task<bool> UpdateReservation(Reservation reservation)
+    public async Task<bool> UpdateReservation(ReservationRequest reservation)
     {
         var schedule =  await _scheduleCollection.Find(t => t.Id == reservation.ScheduleId).FirstOrDefaultAsync();
 
@@ -63,7 +108,11 @@ public class ReservationService : IReservationService
         {
             throw new Exception("At least 5 days before the reservation date.");
         }
-        var res = await _reservationCollection.ReplaceOneAsync(x => x.Id == reservation.Id, reservation);
+        
+        var reservationModel =  await _reservationCollection.Find(t => t.Id == reservation.Id).FirstOrDefaultAsync();
+        reservationModel.Seats = reservation.Seats;
+        
+        var res = await _reservationCollection.ReplaceOneAsync(x => x.Id == reservation.Id, reservationModel);
         return true;
     }
 
@@ -80,9 +129,19 @@ public class ReservationService : IReservationService
         return true;
     }
 
-    public async Task<List<Reservation>> GetAllReservationByTravelerId(string userId)
+    public async Task<List<Reservation>> GetAllReservationByTravelerId(string userNIC)
     {
-        var trains = await _reservationCollection.Find(s => s.TravelerId == userId).ToListAsync();
+        var trains = await _reservationCollection.Find(s => s.TravelerNIC == userNIC).ToListAsync();
         return trains;
+    }
+
+    private async Task<bool> CheckIsPastReservation(DateTime dateTime)
+    {
+        var res = dateTime < DateTime.Now;
+        if (res)
+        {
+            return true;
+        }
+        return false;
     }
 }

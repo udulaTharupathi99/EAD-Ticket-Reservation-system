@@ -66,9 +66,17 @@ namespace EAD_APP.BusinessLogic.Services
             return true;
         }
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<User>> GetAllOfficeUsers()
         {
             var users = await _userCollection.Find(_ => true).ToListAsync();
+            var users1 = await _userCollection.Find(u=> u.Role == RoleType.BackOffice || u.Role == RoleType.TravelAgent).ToListAsync();
+            
+            return users1;
+        }
+        
+        public async Task<List<User>> GetAllTravelers()
+        {
+            var users = await _userCollection.Find(u=>u.Role == RoleType.Traveler).ToListAsync();
             return users;
         }
 
