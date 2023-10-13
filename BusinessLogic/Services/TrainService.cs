@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FileName: TrainService.cs
+//Author : IT20151188
+//Created On : 9/10/2023 
+//Description : TrainService service 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
@@ -18,36 +24,42 @@ public class TrainService : ITrainService
         _reservationCollection = mongoDatabase.GetCollection<Reservation>("reservation");
     }
 
+    //get all trains
     public async Task<List<Train>> GetAllTrains()
     {
         var trains = await _trainCollection.Find(_ => true).ToListAsync();
         return trains;
     }
 
+    //get train by id
     public async Task<Train> GetTrainById(string id)
     {
         var train =  await _trainCollection.Find(t => t.Id == id).FirstOrDefaultAsync();
         return train;
     }
 
+    //add new train
     public async Task<bool> CreateTrain(Train train)
     {
         await _trainCollection.InsertOneAsync(train);
         return true;
     }
 
+    //update train
     public async Task<bool> UpdateTrain(Train train)
     {
         var res = await _trainCollection.ReplaceOneAsync(x => x.Id == train.Id, train);
         return true;
     }
 
+    //delete train
     public async Task<bool> DeleteTrain(string id)
     {
         var res = await _trainCollection.DeleteOneAsync(x => x.Id == id);
         return true;
     }
 
+    //change train status(active, deactivate)
     public async Task<bool> UpdateStatus(Train train, ActiveStatus status)
     {
         if (status == ActiveStatus.Delete)

@@ -1,4 +1,10 @@
-﻿using EAD_APP.BusinessLogic.Interfaces;
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FileName: ScheduleService.cs
+//Author : IT20134358
+//Created On : 9/10/2023 
+//Description : UserService service 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
 using EAD_APP.Core.Requests;
@@ -16,6 +22,7 @@ namespace EAD_APP.BusinessLogic.Services
             _userCollection = mongoDatabase.GetCollection<User>("user"); 
         }
 
+        //add new user
         public async Task<bool> CreateUser(User request)
         {
             //check NIC
@@ -31,6 +38,7 @@ namespace EAD_APP.BusinessLogic.Services
             return true;
         }
         
+        //user login
         public async Task<User> LoginUser(LoginRequest request)
         {
             var user =  await _userCollection.Find(u => u.Email == request.Email).FirstOrDefaultAsync();
@@ -52,6 +60,7 @@ namespace EAD_APP.BusinessLogic.Services
             return user;
         }
 
+        //change user status(active, deactivate)
         public async Task<bool> UpdateStatus(User user, ActiveStatus status)
         {
             user.Status = status;
@@ -60,12 +69,14 @@ namespace EAD_APP.BusinessLogic.Services
             return true;
         }
 
+        //delete user
         public async Task<bool> DeleteUser(string id)
         {
             var res = await _userCollection.DeleteOneAsync(x => x.Id == id);
             return true;
         }
 
+        //get all office users
         public async Task<List<User>> GetAllOfficeUsers()
         {
             var users = await _userCollection.Find(_ => true).ToListAsync();
@@ -74,18 +85,21 @@ namespace EAD_APP.BusinessLogic.Services
             return users1;
         }
         
+        //get all traveler users
         public async Task<List<User>> GetAllTravelers()
         {
             var users = await _userCollection.Find(u=>u.Role == RoleType.Traveler).ToListAsync();
             return users;
         }
 
+        //get user by id
         public async Task<User> GetUserById(string id)
         {
             var user =  await _userCollection.Find(u => u.Id == id).FirstOrDefaultAsync();
             return user;
         }
 
+        //update user
         public async Task<bool> UpdateUser(User user)
         {
             user.Password =  BCryptNet.HashPassword(user.Password);

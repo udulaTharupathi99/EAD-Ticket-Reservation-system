@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FileName: ScheduleController.cs
+//Author : IT20135102
+//Created On : 9/10/2023 
+//Description : ScheduleController
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Models;
 using EAD_APP.Core.Response;
@@ -16,6 +22,7 @@ public class ScheduleController : Controller
         _scheduleService = scheduleService;
     }
 
+    //get all Schedules
     [HttpGet]
     public async Task<IActionResult> GetAllSchedules()
     {
@@ -23,6 +30,7 @@ public class ScheduleController : Controller
         return Ok(schedule);
     }
     
+    //get Schedule by id
     [HttpGet]
     [Route("{id}")]
     public async Task<IActionResult> GetScheduleById(string id)
@@ -36,6 +44,7 @@ public class ScheduleController : Controller
         return Ok(schedule);
     }
     
+    //add new Schedule
     [HttpPost]
     public async Task<IActionResult> AddSchedule(Schedule request)
     {
@@ -43,6 +52,7 @@ public class ScheduleController : Controller
         return CreatedAtAction(nameof(GetScheduleById), new { id = request.Id }, request);
     }
     
+    //Update Schedule
     [HttpPut]
     public async Task<IActionResult> UpdateSchedule(Schedule request)
     {
@@ -57,6 +67,7 @@ public class ScheduleController : Controller
         return Ok(newSchedule);
     }
     
+    //delete Schedule
     [HttpDelete]
     public async Task<IActionResult> DeleteSchedule(string id)
     {
@@ -71,6 +82,7 @@ public class ScheduleController : Controller
         return Ok(res);
     }
     
+    //get Schedule by train id
     [HttpGet]
     [Route("train/{trainId}")]
     public async Task<IActionResult> GetAllScheduleByTrainId(string trainId)

@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FileName: UserController.cs
+//Author : IT20124526
+//Created On : 9/10/2023 
+//Description : UserController
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Models;
 using EAD_APP.Core.Requests;
@@ -18,6 +24,7 @@ public class ReservationController : Controller
         _reservationService = reservationService;
     }
     
+    //get all reservations
     [HttpGet]
     public async Task<IActionResult> GetAllReservation()
     {
@@ -25,6 +32,7 @@ public class ReservationController : Controller
         return Ok(schedule);
     }
     
+    //get reservation by id
     [HttpGet]
     [Route("{id}")]
     public async Task<IActionResult> GetReservationById(string id)
@@ -38,16 +46,13 @@ public class ReservationController : Controller
         return Ok(schedule);
     }
     
+    //add new reservation
     [HttpPost]
     public async Task<IActionResult> AddReservation(ReservationRequest request)
     {
         try
         {
             await _reservationService.CreateReservation(request);
-            
-            // var ob = new Reservation();
-            // return CreatedAtAction(nameof(GetReservationById), new { id = request.Id }, ob);
-            // var schedule = await _reservationService.GetReservationById(request.Id);
             
             var res = new ApiResponse() { IsSuccess = "true", Msg = "Success"};
             return Ok(res);
@@ -60,6 +65,7 @@ public class ReservationController : Controller
         
     }
     
+    //update reservation
     [HttpPut]
     public async Task<IActionResult> UpdateReservation(ReservationRequest request)
     {
@@ -83,6 +89,7 @@ public class ReservationController : Controller
         }
     }
     
+    //delete reservation
     [HttpDelete]
     public async Task<IActionResult> DeleteReservation(string id)
     {
@@ -107,6 +114,7 @@ public class ReservationController : Controller
         
     }
     
+    //get reservations by user NIC
     [HttpGet]
     [Route("traverler/{userNIC}")]
     public async Task<IActionResult> GetAllReservationByUserNIC(string userNIC)

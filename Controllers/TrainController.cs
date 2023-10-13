@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FileName: TrainController.cs
+//Author : IT20151188
+//Created On : 9/10/2023 
+//Description : TrainController
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
@@ -17,6 +23,7 @@ public class TrainController : Controller
         _trainService = trainService;
     }
 
+    //get all trains
     [HttpGet]
     public async Task<IActionResult> GetAllTrains()
     {
@@ -24,6 +31,7 @@ public class TrainController : Controller
         return Ok(trains);
     }
     
+    //get train by id
     [HttpGet]
     [Route("{id}")]
     public async Task<IActionResult> GetTrainById(string id)
@@ -37,6 +45,7 @@ public class TrainController : Controller
         return Ok(train);
     }
     
+    //add new train
     [HttpPost]
     public async Task<IActionResult> AddTrain(Train request)
     {
@@ -44,6 +53,7 @@ public class TrainController : Controller
         return CreatedAtAction(nameof(GetTrainById), new { id = request.Id }, request);
     }
     
+    //update train
     [HttpPut]
     public async Task<IActionResult> UpdateTrain(Train request)
     {
@@ -58,6 +68,7 @@ public class TrainController : Controller
         return Ok(newTrain);
     }
     
+    //delete train
     [HttpDelete]
     [Route("{id}")]
     public async Task<IActionResult> DeleteTrain(string id)
@@ -73,6 +84,7 @@ public class TrainController : Controller
         return Ok(res);
     }
     
+    //change train status(active, deactivate)
     [HttpPut]
     [Route("{trainId}/{status}")]
     public async Task<IActionResult> UpdateStatus(string trainId, ActiveStatus status)

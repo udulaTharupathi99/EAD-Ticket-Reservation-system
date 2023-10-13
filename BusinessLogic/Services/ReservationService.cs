@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FileName: ReservationService.cs
+//Author : IT20124526
+//Created On : 9/10/2023 
+//Description : ReservationService service 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Models;
 using EAD_APP.Core.Requests;
@@ -21,44 +27,26 @@ public class ReservationService : IReservationService
         _trainCollection = mongoDatabase.GetCollection<Train>("train");
     }
 
+    //get all reservations
     public async Task<List<Reservation>> GetAllReservation()
     {
         var trains = await _reservationCollection.Find(_ => true).ToListAsync();
         return trains;
     }
 
+    //get reservation by id
     public async Task<Reservation> GetReservationById(string id)
     {
         
         var reservation =  await _reservationCollection.Find(t => t.Id == id).FirstOrDefaultAsync();
-        //var user = await _userCollection.Find(t => t.Id == reservation.TravelerNIC).FirstOrDefaultAsync();
-        //var schedule =  await _scheduleCollection.Find(t => t.Id == reservation.ScheduleId).FirstOrDefaultAsync();
-        //var train =  await _trainCollection.Find(t => t.Id == reservation.TrainId).FirstOrDefaultAsync();
-
         var isPastSchedule = await CheckIsPastReservation(reservation.Schedule.StartDateTime);
 
         reservation.IsPast = isPastSchedule;
         
-        // var res = new ReservationResponse()
-        // {
-        //     ReservationId = reservation.Id,
-        //     BookingDateTime = reservation.BookingDateTime,
-        //     Status = reservation.Status,
-        //     ScheduleId = reservation.ScheduleId,
-        //     Start = schedule.Start,
-        //     Destination = schedule.Destination,
-        //     StartDateTime = schedule.StartDateTime,
-        //     DestinationDateTime = schedule.DestinationDateTime,
-        //     TrainName = train.TrainName,
-        //     IsPast = isPastSchedule,
-        //     TrainId = reservation.TrainId,
-        //     TravelerNIC = reservation.TravelerNIC,
-        //     Seats = reservation.Seats
-        // };
-        
         return reservation;
     }
 
+    //add new reservation
     public async Task<bool> CreateReservation(ReservationRequest reservation)
     {
         var user = await _userCollection.Find(t => t.NIC == reservation.TravelerNIC).FirstOrDefaultAsync();
@@ -100,6 +88,7 @@ public class ReservationService : IReservationService
         return true;
     }
 
+    //update reservation
     public async Task<bool> UpdateReservation(ReservationRequest reservation)
     {
         var schedule =  await _scheduleCollection.Find(t => t.Id == reservation.ScheduleId).FirstOrDefaultAsync();
@@ -116,6 +105,7 @@ public class ReservationService : IReservationService
         return true;
     }
 
+    //delete reservation
     public async Task<bool> DeleteReservation(string id)
     {
         var reservation =  await _reservationCollection.Find(t => t.Id == id).FirstOrDefaultAsync();
@@ -129,6 +119,7 @@ public class ReservationService : IReservationService
         return true;
     }
 
+    //get reservations by user NIC
     public async Task<List<Reservation>> GetAllReservationByTravelerId(string userNIC)
     {
         var trains = await _reservationCollection.Find(s => s.TravelerNIC == userNIC).ToListAsync();

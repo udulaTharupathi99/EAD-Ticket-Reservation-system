@@ -1,4 +1,10 @@
-﻿using EAD_APP.Core.Enums;
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FileName: Reservation.cs
+//Author : IT20124526
+//Created On : 9/10/2023 
+//Description : Reservation
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+using EAD_APP.Core.Enums;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -15,10 +21,7 @@ public class Reservation
 
     [BsonElement("scheduleId")]
     public string ScheduleId { get; set; }
-
-    // [BsonElement("travelerId")]
-    // public string TravelerId { get; set; }
-
+    
     [BsonElement("travelerNIC")]
     public string TravelerNIC { get; set; }
 

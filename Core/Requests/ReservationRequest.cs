@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FileName: ReservationRequest.cs
+//Author : IT20135102
+//Created On : 9/10/2023 
+//Description : Reservation Request
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 using EAD_APP.Core.Enums;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -12,7 +18,6 @@ public class ReservationRequest
     
     [BsonElement("scheduleId")]
     public string ScheduleId { get; set; }
-    //public string TrainId { get; set; }
     
     [BsonElement("travelerNIC")]
     public string TravelerNIC { get; set; }
@@ -26,5 +31,4 @@ public class ReservationRequest
     [BsonElement("seats")]
     public int Seats  { get; set; }
     
-    //public Schedule Schedule { get; set; }
 }

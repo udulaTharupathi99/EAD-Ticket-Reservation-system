@@ -1,4 +1,10 @@
-﻿using EAD_APP.BusinessLogic.Interfaces;
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FileName: UserController.cs
+//Author : IT20134358
+//Created On : 9/10/2023 
+//Description : UserController
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+using EAD_APP.BusinessLogic.Interfaces;
 using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
 using EAD_APP.Core.Requests;
@@ -20,6 +26,7 @@ namespace EAD_APP.Controllers
             _userService = userService;
         }
 
+        //get all office users
         [HttpGet]
         public async Task<IActionResult> GetAllOfficeUsers()
         {
@@ -27,6 +34,7 @@ namespace EAD_APP.Controllers
             return Ok(people);
         }
         
+        //get all traveler users
         [HttpGet]
         [Route("travelers")]
         public async Task<IActionResult> GetAllTravelers()
@@ -35,6 +43,7 @@ namespace EAD_APP.Controllers
             return Ok(people);
         }
 
+        //get user by id
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetUserById(string id)
@@ -48,6 +57,7 @@ namespace EAD_APP.Controllers
             return Ok(user);
         }
 
+        //add new user
         [HttpPost]
         public async Task<IActionResult> AddUser(User request)
         {
@@ -63,6 +73,7 @@ namespace EAD_APP.Controllers
             
         }
 
+        //update user
         [HttpPut]
         public async Task<IActionResult> UpdateUser(User request)
         {
@@ -77,6 +88,7 @@ namespace EAD_APP.Controllers
             return Ok(newUser);
         }
 
+        //delete user
         [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
@@ -92,6 +104,7 @@ namespace EAD_APP.Controllers
             return Ok(res);
         }
         
+        //user login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest model)
         {
@@ -113,7 +126,7 @@ namespace EAD_APP.Controllers
             
         }
         
-        
+        //change user status(active, deactivate)
         [HttpPut]
         [Route("{userId}/{status}")]
         public async Task<IActionResult> UpdateStatus(string userId, ActiveStatus status)
