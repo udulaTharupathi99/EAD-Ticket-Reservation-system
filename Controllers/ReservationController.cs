@@ -91,6 +91,7 @@ public class ReservationController : Controller
     
     //delete reservation
     [HttpDelete]
+    [Route("{id}")]
     public async Task<IActionResult> DeleteReservation(string id)
     {
         try

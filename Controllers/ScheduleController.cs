@@ -69,6 +69,7 @@ public class ScheduleController : Controller
     
     //delete Schedule
     [HttpDelete]
+    [Route("{id}")]
     public async Task<IActionResult> DeleteSchedule(string id)
     {
         var schedule = await _scheduleService.GetScheduleById(id);
