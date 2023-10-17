@@ -22,8 +22,8 @@ public class ReservationRequest
     [BsonElement("travelerNIC")]
     public string TravelerNIC { get; set; }
     
-    [BsonElement("bookingDateTime")]
-    public DateTime BookingDateTime { get; set; }
+    // [BsonElement("bookingDateTime")]
+    // public DateTime BookingDateTime { get; set; }
     
     [BsonElement("status")]
     public ActiveStatus Status { get; set; }

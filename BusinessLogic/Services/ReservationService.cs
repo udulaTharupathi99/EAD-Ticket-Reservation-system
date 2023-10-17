@@ -77,7 +77,7 @@ public class ReservationService : IReservationService
             TrainId = schedule.TrainId,
             ScheduleId = reservation.ScheduleId,
             TravelerNIC = reservation.TravelerNIC,
-            BookingDateTime = reservation.BookingDateTime,
+            BookingDateTime = DateTime.Now,
             Seats = reservation.Seats,
             Status = reservation.Status,
             Schedule = schedule,
@@ -100,6 +100,7 @@ public class ReservationService : IReservationService
         
         var reservationModel =  await _reservationCollection.Find(t => t.Id == reservation.Id).FirstOrDefaultAsync();
         reservationModel.Seats = reservation.Seats;
+        reservationModel.BookingDateTime = DateTime.Now;
         
         var res = await _reservationCollection.ReplaceOneAsync(x => x.Id == reservation.Id, reservationModel);
         return true;
