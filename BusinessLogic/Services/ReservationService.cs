@@ -123,8 +123,13 @@ public class ReservationService : IReservationService
     //get reservations by user NIC
     public async Task<List<Reservation>> GetAllReservationByTravelerId(string userNIC)
     {
-        var trains = await _reservationCollection.Find(s => s.TravelerNIC == userNIC).ToListAsync();
-        return trains;
+        var reservations = await _reservationCollection.Find(s => s.TravelerNIC == userNIC).ToListAsync();
+
+        foreach (var reservation in reservations)
+        {
+            reservation.IsPast = await CheckIsPastReservation(reservation.Schedule.StartDateTime);
+        }
+        return reservations;
     }
 
     private async Task<bool> CheckIsPastReservation(DateTime dateTime)
