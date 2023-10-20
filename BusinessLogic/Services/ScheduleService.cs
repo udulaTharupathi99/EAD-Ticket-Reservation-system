@@ -22,8 +22,19 @@ public class ScheduleService : IScheduleService
     //get all Schedules
     public async Task<List<Schedule>> GetAllSchedule()
     {
-        var trains = await _scheduleCollection.Find(_ => true).ToListAsync();
-        return trains;
+        var schedules = await _scheduleCollection.Find(_ => true).ToListAsync();
+
+        var schedulesList = new List<Schedule>();
+        foreach (var schedule in schedules)
+        {
+            var maxFutureDate = DateTime.Now.AddDays(30); 
+            if ((schedule.StartDateTime > DateTime.Now) && schedule.StartDateTime < maxFutureDate)
+            {
+                schedulesList.Add(schedule);
+                
+            }
+        }
+        return schedulesList;
     }
 
     //get Schedule by id
