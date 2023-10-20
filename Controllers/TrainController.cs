@@ -16,7 +16,7 @@ namespace EAD_APP.Controllers;
 [Route("api/[controller]")]
 public class TrainController : Controller
 {
-    public readonly ITrainService _trainService;
+    private readonly ITrainService _trainService;
 
     public TrainController(ITrainService trainService)
     {

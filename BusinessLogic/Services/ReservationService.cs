@@ -5,6 +5,7 @@
 //Description : ReservationService service 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 using EAD_APP.BusinessLogic.Interfaces;
+using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
 using EAD_APP.Core.Requests;
 using EAD_APP.Core.Response;
@@ -55,19 +56,23 @@ public class ReservationService : IReservationService
         var allReservationsForUser = await _reservationCollection.Find(s => s.TravelerNIC == reservation.TravelerNIC).ToListAsync();
 
         var futureReservations = new List<Reservation>();
-        if (allReservationsForUser.Count >= 4)
+        if (allReservationsForUser.Count != 0)
         {
-            foreach (var reservationModel in allReservationsForUser)
+            if (allReservationsForUser.Count >= 4)
             {
-                if (reservationModel.Schedule.StartDateTime > DateTime.Now)
+                foreach (var reservationModel in allReservationsForUser)
                 {
-                    futureReservations.Add(reservationModel);
+                    if (reservationModel.Schedule.StartDateTime > DateTime.Now)
+                    {
+                        futureReservations.Add(reservationModel);
+                    }
+
                 }
-                
-            }
-            if (futureReservations.Count >= 4)
-            {
-                throw new Exception("Maximum 4 reservations per reference ID.");
+
+                if (futureReservations.Count >= 4)
+                {
+                    throw new Exception("Maximum 4 reservations per reference ID.");
+                }
             }
         }
 
@@ -128,6 +133,12 @@ public class ReservationService : IReservationService
         foreach (var reservation in reservations)
         {
             reservation.IsPast = await CheckIsPastReservation(reservation.Schedule.StartDateTime);
+
+            var maxDate = DateTime.Now.AddDays(5);
+            if (reservation.Schedule.StartDateTime < maxDate)
+            {
+                reservation.Status = ActiveStatus.Delete;
+            }
         }
         return reservations;
     }
