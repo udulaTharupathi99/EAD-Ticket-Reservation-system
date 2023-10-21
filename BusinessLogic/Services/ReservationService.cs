@@ -51,6 +51,10 @@ public class ReservationService : IReservationService
     public async Task<bool> CreateReservation(ReservationRequest reservation)
     {
         var user = await _userCollection.Find(t => t.NIC == reservation.TravelerNIC).FirstOrDefaultAsync();
+        if (user == null)
+        {
+            throw new Exception("Invalid Traveler !. Plz enter the correct NIC.");
+        }
         var schedule =  await _scheduleCollection.Find(t => t.Id == reservation.ScheduleId).FirstOrDefaultAsync();
         
         var allReservationsForUser = await _reservationCollection.Find(s => s.TravelerNIC == reservation.TravelerNIC).ToListAsync();
