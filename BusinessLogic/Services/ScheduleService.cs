@@ -5,6 +5,7 @@
 //Description : scheduleService service 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 using EAD_APP.BusinessLogic.Interfaces;
+using EAD_APP.Core.Enums;
 using EAD_APP.Core.Models;
 using MongoDB.Driver;
 
@@ -22,7 +23,8 @@ public class ScheduleService : IScheduleService
     //get all Schedules
     public async Task<List<Schedule>> GetAllSchedule()
     {
-        var schedules = await _scheduleCollection.Find(_ => true).ToListAsync();
+        var schedules = await _scheduleCollection.Find(s => s.Status == ActiveStatus.Active).ToListAsync();
+        //var trains = await _scheduleCollection.Find(s => s.Status == ActiveStatus.Active).ToListAsync();
 
         var schedulesList = new List<Schedule>();
         foreach (var schedule in schedules)
@@ -47,6 +49,7 @@ public class ScheduleService : IScheduleService
     //add new Schedule
     public async Task<bool> CreateSchedule(Schedule schedule)
     {
+        schedule.Status = ActiveStatus.Delete;
         await _scheduleCollection.InsertOneAsync(schedule);
         return true;
     }

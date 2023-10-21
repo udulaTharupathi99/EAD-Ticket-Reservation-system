@@ -28,6 +28,15 @@ public class TrainService : ITrainService
     public async Task<List<Train>> GetAllTrains()
     {
         var trains = await _trainCollection.Find(_ => true).ToListAsync();
+
+        // var trainList = new List<Train>();
+        // foreach (var train in trains)
+        // {
+        //     if (train.Status == ActiveStatus.Active)
+        //     {
+        //         trainList.Add(train);
+        //     }
+        // }
         return trains;
     }
 
@@ -41,6 +50,7 @@ public class TrainService : ITrainService
     //add new train
     public async Task<bool> CreateTrain(Train train)
     {
+        train.Status = ActiveStatus.Delete;
         await _trainCollection.InsertOneAsync(train);
         return true;
     }
@@ -53,29 +63,37 @@ public class TrainService : ITrainService
     }
 
     //delete train
+    //change train status(deactivate)
     public async Task<bool> DeleteTrain(string id)
     {
-        var res = await _trainCollection.DeleteOneAsync(x => x.Id == id);
+        var train =  await _trainCollection.Find(t => t.Id == id).FirstOrDefaultAsync();
+        var isDeleted = await ChangeSchedulesStatusByTrainId(train.Id);
+
+        if (!isDeleted)
+        {
+            throw new Exception("Can't cancel this train. Train has future reservations");
+        }
+
+        train.Status = ActiveStatus.Delete;
+        var res = await _trainCollection.ReplaceOneAsync(x => x.Id == train.Id, train);
+        //var res = await _trainCollection.DeleteOneAsync(x => x.Id == id);
         return true;
     }
 
-    //change train status(active, deactivate)
-    public async Task<bool> UpdateStatus(Train train, ActiveStatus status)
+    //change train status(active)
+    public async Task<bool> UpdateStatus(string id)
     {
-        if (status == ActiveStatus.Delete)
-        {
-            //delete schedules
-            var isDeleted = await ChangeSchedulesStatusByTrainId(train.Id);
-
-            if (!isDeleted)
-            {
-                throw new Exception("Can't delete this train.");
-
-            }
-        }
+        var train =  await _trainCollection.Find(t => t.Id == id).FirstOrDefaultAsync();
+        var schedules = await _scheduleCollection.Find(s => s.TrainId == id).ToListAsync();
         
-        train.Status = status;
+        train.Status  = ActiveStatus.Active;
         var res = await _trainCollection.ReplaceOneAsync(x => x.Id == train.Id, train);
+
+        foreach (var schedule in schedules)
+        {
+            schedule.Status = ActiveStatus.Active;
+            var res1 = await _scheduleCollection.ReplaceOneAsync(x => x.Id == schedule.Id, schedule);
+        }
         return true;
     }
 
@@ -87,16 +105,10 @@ public class TrainService : ITrainService
         var isFuture = false;
         foreach (var reservation in reservations)
         {
-            foreach (var schedule in schedules)
+            isFuture = reservation.Schedule.StartDateTime > DateTime.Now;
+            if (isFuture)
             {
-                if (reservation.ScheduleId == schedule.Id)
-                {
-                    isFuture = schedule.StartDateTime > DateTime.Now;
-                    if (isFuture)
-                    {
-                        break;
-                    }
-                }
+                break;
             }
         }
 
@@ -109,6 +121,7 @@ public class TrainService : ITrainService
         {
             schedule.Status = ActiveStatus.Delete;
             var res = await _scheduleCollection.ReplaceOneAsync(x => x.Id == schedule.Id, schedule);
+            //var res = await _scheduleCollection.DeleteOneAsync(x => x.Id == schedule.Id);
         }
         return true;
     }

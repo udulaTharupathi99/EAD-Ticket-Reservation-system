@@ -73,21 +73,29 @@ public class TrainController : Controller
     [Route("{id}")]
     public async Task<IActionResult> DeleteTrain(string id)
     {
-        var train = await _trainService.GetTrainById(id);
-        if (train == null)
+        try
         {
-            return NotFound();
-        }
+            var train = await _trainService.GetTrainById(id);
+            if (train == null)
+            {
+                return NotFound();
+            }
     
-        await _trainService.DeleteTrain(id);
-        var res = new ApiResponse() { IsSuccess = "true", Msg = "Success" };
-        return Ok(res);
+            await _trainService.DeleteTrain(id);
+            var res = new ApiResponse() { IsSuccess = "true", Msg = "Success" };
+            return Ok(res);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+        
     }
     
-    //change train status(active, deactivate)
+    //change train status(active)
     [HttpPut]
-    [Route("{trainId}/{status}")]
-    public async Task<IActionResult> UpdateStatus(string trainId, ActiveStatus status)
+    [Route("active/{trainId}")]
+    public async Task<IActionResult> UpdateStatus(string trainId)
     {
         try
         {
@@ -97,7 +105,7 @@ public class TrainController : Controller
                 return NotFound();
             }
 
-            await _trainService.UpdateStatus(train, status);
+            await _trainService.UpdateStatus(trainId);
             var res = new ApiResponse() { IsSuccess = "true", Msg = "Success"};
             return Ok(res);
 

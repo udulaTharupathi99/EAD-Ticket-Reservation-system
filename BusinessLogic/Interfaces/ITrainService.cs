@@ -16,5 +16,5 @@ public interface ITrainService
     Task<bool> CreateTrain(Train user);
     Task<bool> UpdateTrain(Train user);
     Task<bool> DeleteTrain(string id);
-    Task<bool> UpdateStatus(Train train, ActiveStatus status);
+    Task<bool> UpdateStatus(string id);
 }

@@ -100,7 +100,7 @@ public class ReservationService : IReservationService
 
         if (!((schedule.StartDateTime - DateTime.Now).Days >= 5))
         {
-            throw new Exception("At least 5 days before the reservation date.");
+            throw new Exception("Changes can only be made up to 5 days before the travel start date");
         }
         
         var reservationModel =  await _reservationCollection.Find(t => t.Id == reservation.Id).FirstOrDefaultAsync();
@@ -119,7 +119,7 @@ public class ReservationService : IReservationService
 
         if (!((schedule.StartDateTime - DateTime.Now).Days >= 5))
         {
-            throw new Exception("At least 5 days before the reservation date.");
+            throw new Exception("Changes can only be made up to 5 days before the travel start date");
         }
         var res = await _reservationCollection.DeleteOneAsync(x => x.Id == id);
         return true;
